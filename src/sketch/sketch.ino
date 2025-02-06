@@ -43,22 +43,23 @@ void connectToWifi() {
   isConnected = wifiManager.autoConnect(WIFI_USERNAME, WIFI_PASSWORD);
 
   if (isConnected) {
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.print("IP address: ");
+    Serial.println("::connectToWifi:: WiFi connected");
+    Serial.print("::connectToWifi:: IP address: ");
     Serial.println(WiFi.localIP());
   } else {
-    Serial.println("Failed to connect or hit timeout");
+    Serial.println("::connectToWifi:: Failed to connect or hit timeout");
   }
 }
 
 void showTime() {
   Serial.println("::showTime::");
+  isHexEnabled = !isHexEnabled;
 
   if (isConnected) {
     struct tm timeinfo;
     if (!getLocalTime(&timeinfo)) {
-      display.clear();
+      display.showNumberDecEx(8888, 0b00000000);  // Not able to get local time
+      Serial.println("::showTime:: [8888] Not able to get local time");
       return;
     }
 
@@ -66,19 +67,25 @@ void showTime() {
     int minute = timeinfo.tm_min;
 
     int time = 0;
-    
+
     if (hour == 0)
       time = minute;
     else
-      time = (hour * 100) +minute;
+      time = (hour * 100) + minute;
 
-    Serial.println(time);
-
-    isHexEnabled = !isHexEnabled;
-
-    if (isHexEnabled)
-      display.showNumberDecEx(time, 0b01000000);
-    else
-      display.showNumberDecEx(time, 0b00000000);
+    if (isHexEnabled) {
+      if (hour == 0)
+        display.showNumberDecEx(time, 0b01000000, true, 3);
+      else
+        display.showNumberDecEx(time, 0b01000000);
+    } else {
+      if (hour == 0)
+        display.showNumberDecEx(time, 0b00000000, true, 3);
+      else
+        display.showNumberDecEx(time, 0b00000000);
+    }
+  } else {
+    display.showNumberDecEx(9999, 0b00000000);  // Not connected
+    Serial.println("::showTime:: [9999] Not connected");
   }
 }
