@@ -11,30 +11,34 @@
 
 TM1637Display display = TM1637Display(CLK, DIO);  // Display
 WiFiManager wifiManager;                          // WiFi manager
+
 bool isSensorAvailable = false;
 bool isConnected = false;
+bool isHexEnabled = false;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("setup");
-  
+  Serial.println("::setup::");
+
   configureDisplay();
   connectToWifi();
+  configTime(UTC_OFFSET, UTC_OFFSET_DST, NTP_SERVER);
 }
 
 void loop() {
-  display.showNumberDecEx(1530, 0b11100000, false, 4, 0);
+  showTime();
+  delay(1000);
 }
 
 void configureDisplay() {
-  Serial.println("configureDisplay");
+  Serial.println("::configureDisplay::");
 
   display.clear();
-  display.setBrightness(4);  // 0 to 7
+  display.setBrightness(3);  // 0 to 7
 }
 
 void connectToWifi() {
-  Serial.println("connectToWifi");
+  Serial.println("::connectToWifi::");
 
   isConnected = wifiManager.autoConnect(WIFI_USERNAME, WIFI_PASSWORD);
 
@@ -45,5 +49,27 @@ void connectToWifi() {
     Serial.println(WiFi.localIP());
   } else {
     Serial.println("Failed to connect or hit timeout");
+  }
+}
+
+void showTime() {
+  Serial.println("::showTime::");
+
+  if (isConnected) {
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+      display.clear();
+      return;
+    }
+
+    int time = (timeinfo.tm_hour * 100) + timeinfo.tm_min;
+    Serial.println(time);
+
+    isHexEnabled = !isHexEnabled;
+
+    if (isHexEnabled)
+      display.showNumberDecEx(time, 0b01000000);
+    else
+      display.showNumberDecEx(time, 1);
   }
 }
