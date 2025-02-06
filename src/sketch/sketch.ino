@@ -75,12 +75,12 @@ void showTime() {
 
     if (isHexEnabled) {
       if (hour == 0)
-        display.showNumberDecEx(time, 0b01000000, true, 3);
+        display.showNumberDecEx(time, 0b01000000, true);
       else
         display.showNumberDecEx(time, 0b01000000);
     } else {
       if (hour == 0)
-        display.showNumberDecEx(time, 0b00000000, true, 3);
+        display.showNumberDecEx(time, 0b00000000, true);
       else
         display.showNumberDecEx(time, 0b00000000);
     }
