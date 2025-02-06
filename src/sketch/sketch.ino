@@ -62,7 +62,16 @@ void showTime() {
       return;
     }
 
-    int time = (timeinfo.tm_hour * 100) + timeinfo.tm_min;
+    int hour = timeinfo.tm_hour;
+    int minute = timeinfo.tm_min;
+
+    int time = 0;
+    
+    if (hour == 0)
+      time = minute;
+    else
+      time = (hour * 100) +minute;
+
     Serial.println(time);
 
     isHexEnabled = !isHexEnabled;
@@ -70,6 +79,6 @@ void showTime() {
     if (isHexEnabled)
       display.showNumberDecEx(time, 0b01000000);
     else
-      display.showNumberDecEx(time, 1);
+      display.showNumberDecEx(time, 0b00000000);
   }
 }
