@@ -1,5 +1,6 @@
 #include <TM1637Display.h>
 #include <WiFiManager.h>
+#include <AUnit.h>
 
 #define CLK 22                    // The ESP32 pin GPIO22 connected to CLK
 #define DIO 23                    // The ESP32 pin GPIO23 connected to DIO
@@ -12,6 +13,8 @@
 TM1637Display display = TM1637Display(CLK, DIO);  // Display
 WiFiManager wifiManager;                          // WiFi manager
 
+using namespace aunit; // Unit Test
+
 bool isSensorAvailable = false;
 bool isConnected = false;
 bool isHexEnabled = false;
@@ -23,6 +26,7 @@ void setup() {
   configureDisplay();
   connectToWifi();
   configTime(UTC_OFFSET, UTC_OFFSET_DST, NTP_SERVER);
+  Test::run(); // Unit test
 }
 
 void loop() {
@@ -88,4 +92,13 @@ void showTime() {
     display.showNumberDecEx(9999, 0b00000000);  // Not connected
     Serial.println("::showTime:: [9999] Not connected");
   }
+}
+
+/* Testing */
+test(testAddition) {
+    assertEqual(2 + 2, 4);
+}
+
+test(testSubtraction) {
+    assertEqual(5 - 3, 2);
 }
