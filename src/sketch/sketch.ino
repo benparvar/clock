@@ -63,27 +63,10 @@ void showTime() {
       return;
     }
 
-    int hour = timeinfo.tm_hour;
-    int minute = timeinfo.tm_min;
+    int time = (timeinfo.tm_hour * 100) + timeinfo.tm_min;
 
-    int time = 0;
+    isHexEnabled ? display.showNumberDecEx(time, 0b01000000, true) : display.showNumberDecEx(time, 0b00000000, true);
 
-    if (hour == 0)
-      time = minute;
-    else
-      time = (hour * 100) + minute;
-
-    if (isHexEnabled) {
-      if (hour == 0)
-        display.showNumberDecEx(time, 0b01000000, true);
-      else
-        display.showNumberDecEx(time, 0b01000000);
-    } else {
-      if (hour == 0)
-        display.showNumberDecEx(time, 0b00000000, true);
-      else
-        display.showNumberDecEx(time, 0b00000000);
-    }
   } else {
     display.showNumberDecEx(9999, 0b00000000);  // Not connected
     Serial.println("::showTime:: [9999] Not connected");
