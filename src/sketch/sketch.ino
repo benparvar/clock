@@ -42,8 +42,7 @@ void connectToWifi() {
   isConnected = wifiManager.autoConnect(WIFI_USERNAME, WIFI_PASSWORD);
 
   if (isConnected) {
-    Log.verbose("::connectToWifi:: WiFi connected" CR);
-    Log.verbose("::connectToWifi:: IP address:  %p" CR, WiFi.localIP());
+    Log.verbose("::connectToWifi::  WiFi connected -> IP address:  %p" CR, WiFi.localIP());
   } else {
     Log.error("::connectToWifi:: Failed to connect or hit timeout" CR);
   }
