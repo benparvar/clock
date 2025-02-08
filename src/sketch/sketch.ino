@@ -1,5 +1,6 @@
 #include <TM1637Display.h>
 #include <WiFiManager.h>
+#include <ArduinoLog.h>
 
 #define CLK 22                    // The ESP32 pin GPIO22 connected to CLK
 #define DIO 23                    // The ESP32 pin GPIO23 connected to DIO
@@ -18,8 +19,8 @@ bool isHexEnabled = false;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("::setup::");
-
+  Log.begin(LOG_LEVEL_VERBOSE, &Serial, true);  // Log
+  Log.notice("::setup::" CR);
   configureDisplay();
   connectToWifi();
   configTime(UTC_OFFSET, UTC_OFFSET_DST, NTP_SERVER);
@@ -31,35 +32,32 @@ void loop() {
 }
 
 void configureDisplay() {
-  Serial.println("::configureDisplay::");
-
+  Log.notice("::configureDisplay::" CR);
   display.clear();
   display.setBrightness(3);  // 0 to 7
 }
 
 void connectToWifi() {
-  Serial.println("::connectToWifi::");
-
+  Log.notice("::connectToWifi::" CR);
   isConnected = wifiManager.autoConnect(WIFI_USERNAME, WIFI_PASSWORD);
 
   if (isConnected) {
-    Serial.println("::connectToWifi:: WiFi connected");
-    Serial.print("::connectToWifi:: IP address: ");
-    Serial.println(WiFi.localIP());
+    Log.verbose("::connectToWifi:: WiFi connected" CR);
+    Log.verbose("::connectToWifi:: IP address:  %p" CR, WiFi.localIP());
   } else {
-    Serial.println("::connectToWifi:: Failed to connect or hit timeout");
+    Log.error("::connectToWifi:: Failed to connect or hit timeout" CR);
   }
 }
 
 void showTime() {
-  Serial.println("::showTime::");
+  Log.notice("::showTime::" CR);
   isHexEnabled = !isHexEnabled;
 
   if (isConnected) {
     struct tm timeinfo;
     if (!getLocalTime(&timeinfo)) {
       display.showNumberDecEx(8888, 0b00000000);  // Not able to get local time
-      Serial.println("::showTime:: [8888] Not able to get local time");
+      Log.error("::showTime:: [8888] Not able to get local time" CR);
       return;
     }
 
@@ -69,6 +67,6 @@ void showTime() {
 
   } else {
     display.showNumberDecEx(9999, 0b00000000);  // Not connected
-    Serial.println("::showTime:: [9999] Not connected");
+    Log.error("::showTime:: [9999] Not connected" CR);
   }
 }
